@@ -12,8 +12,8 @@ export async function POST(req: Request) {
     }
 
     // Read context files to make the API context aware
-    const csvPath = path.join(process.cwd(), '..', 'dashboard_data.csv');
-    const readmePath = path.join(process.cwd(), '..', 'data-README.md');
+    const csvPath = path.join(process.cwd(), 'data', 'dashboard_data.csv');
+    const readmePath = path.join(process.cwd(), 'data', 'data-README.md');
     const jsonPath = path.join(process.cwd(), 'lib', 'data.json');
     
     let contextStr = 'Context is unavailable.';
