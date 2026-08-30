@@ -142,7 +142,8 @@ export default function Chatbot() {
                         ol: ({node, ...props}) => <ol className="list-decimal pl-5 mb-2 space-y-1" {...props} />,
                         li: ({node, ...props}) => <li className="" {...props} />,
                         code: ({node, ...props}) => <code className="bg-slate-100 text-pink-600 px-1 py-0.5 rounded text-xs" {...props} />,
-                        pre: ({node, ...props}) => <pre className="bg-slate-900 text-slate-50 p-3 rounded-lg overflow-x-auto text-xs my-2" {...props} />
+                        pre: ({node, ...props}) => <pre className="bg-slate-900 text-slate-50 p-3 rounded-lg overflow-x-auto text-xs my-2" {...props} />,
+                        img: ({node, ...props}) => <img className="rounded-lg shadow-sm border border-slate-200 my-2 max-w-full" {...props} />
                       }}
                     >
                       {msg.content}

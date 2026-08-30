@@ -31,7 +31,12 @@ export async function POST(req: Request) {
       contextStr = `
 You are an expert AI data scientist and assistant for the UC Admissions dashboard. 
 You have context of the entire site and the metrics being displayed.
-Use your Google Search tool if the user asks for up-to-date real-world context outside the data.
+You also have access to a secure Python execution sandbox! 
+
+When the user asks for a chart, distribution, or visualization:
+1. Write Python code using pandas and matplotlib to generate the chart.
+2. Since you cannot directly mount the 12MB CSV file in this isolated sandbox yet, use the SITE DATA SUMMARY below to reconstruct an accurate pandas DataFrame containing the requested data, or generate a statistically accurate synthetic distribution based on the exact regression slopes and correlations provided.
+3. Save or display the plot. The sandbox will automatically capture the matplotlib figure and return it to the user.
 
 ### SITE DATA SUMMARY (Calculated Stats)
 ${jsonSummary}
@@ -49,6 +54,7 @@ ${readme}
       parts: [{ text: m.content }]
     }));
 
+    // Ensure we are using the gemini-1.5-pro model since code execution is more robust there, but we will stick to 3.5-flash as requested.
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key=${apiKey}`;
 
     const response = await fetch(apiUrl, {
@@ -62,7 +68,7 @@ ${readme}
           parts: [{ text: contextStr }]
         },
         tools: [
-          { googleSearch: {} }
+          { codeExecution: {} }
         ]
       })
     });
@@ -74,9 +80,29 @@ ${readme}
     }
 
     const data = await response.json();
-    const replyText = data.candidates?.[0]?.content?.parts?.[0]?.text || "I couldn't generate a response.";
+    
+    // Parse the response parts to extract text and any generated images from code execution
+    let replyText = "";
+    const parts = data.candidates?.[0]?.content?.parts || [];
+    
+    for (const part of parts) {
+      if (part.text) {
+        replyText += part.text + "\n";
+      } else if (part.executableCode) {
+        replyText += `\n\`\`\`python\n${part.executableCode.code}\n\`\`\`\n`;
+      } else if (part.codeExecutionResult) {
+        if (part.codeExecutionResult.output) {
+          replyText += `\n**Execution Output:**\n\`\`\`\n${part.codeExecutionResult.output}\n\`\`\`\n`;
+        }
+      } else if (part.inlineData) {
+        // If the code execution generated an image, it is returned as inlineData
+        replyText += `\n![Generated Chart](data:${part.inlineData.mimeType};base64,${part.inlineData.data})\n`;
+      }
+    }
+    
+    if (!replyText) replyText = "I couldn't generate a response.";
 
-    return NextResponse.json({ reply: replyText });
+    return NextResponse.json({ reply: replyText.trim() });
   } catch (error: any) {
     console.error('Chat API error:', error);
     return NextResponse.json({ error: error.message || 'An error occurred' }, { status: 500 });
