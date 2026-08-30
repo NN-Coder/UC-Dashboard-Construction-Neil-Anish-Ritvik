@@ -133,6 +133,7 @@ export default function Chatbot() {
                     msg.content
                   ) : (
                     <ReactMarkdown
+                      urlTransform={(value: string) => value}
                       components={{
                         strong: ({node, ...props}) => <span className="font-bold text-slate-900" {...props} />,
                         h3: ({node, ...props}) => <h3 className="text-lg font-bold mt-3 mb-1 text-slate-900" {...props} />,
