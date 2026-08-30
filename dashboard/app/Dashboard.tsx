@@ -25,7 +25,7 @@ export default function Dashboard() {
   // Let's check if 'Universitywide' is in the dataset. If not, fallback to the first one.
   const actualSelectedCampus = campuses.includes(selectedCampus) ? selectedCampus : campuses[0];
 
-  const campusStats = data.campuses[actualSelectedCampus];
+  const campusStats = (data.campuses as any)[actualSelectedCampus];
   const preStats = campusStats?.pre || { r: 0, r2: 0, p: 0, count: 0, slope: 0, intercept: 0 };
   const postStats = campusStats?.post || { r: 0, r2: 0, p: 0, count: 0, slope: 0, intercept: 0 };
   const deltaR = postStats.r - preStats.r;
@@ -34,13 +34,13 @@ export default function Dashboard() {
   const formatNum = (num: number, decimals: number = 2) => (num || 0).toFixed(decimals);
   const formatPct = (num: number) => `${((num || 0) * 100).toFixed(1)}%`;
 
-  const scatterDataPre = (data.scatter_data?.pre || []).filter((d: any) => d.campus === actualSelectedCampus);
-  const scatterDataPost = (data.scatter_data?.post || []).filter((d: any) => d.campus === actualSelectedCampus);
+  const scatterDataPre = ((data as any).scatter_data?.pre || []).filter((d: any) => d.campus === actualSelectedCampus);
+  const scatterDataPost = ((data as any).scatter_data?.post || []).filter((d: any) => d.campus === actualSelectedCampus);
 
   // Campus comparison data for bar chart
   const barData = campuses.map(c => {
-    const p = data.campuses[c]?.pre?.r || 0;
-    const po = data.campuses[c]?.post?.r || 0;
+    const p = (data.campuses as any)[c]?.pre?.r || 0;
+    const po = (data.campuses as any)[c]?.post?.r || 0;
     return {
       name: c === 'Universitywide' ? 'All (Uni)' : c.replace('UC ', ''),
       '2017-2019 (r)': p,
