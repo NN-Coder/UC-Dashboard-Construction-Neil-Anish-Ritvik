@@ -28,12 +28,9 @@ export async function POST(req: Request) {
         jsonSummary = JSON.stringify(jsonData, null, 2);
       }
       
-      // Read a large chunk of the CSV to give it access to the raw data
-      const csvData = fs.existsSync(csvPath) ? fs.readFileSync(csvPath, 'utf8').substring(0, 50000) : '';
-
       contextStr = `
 You are an expert AI data scientist and assistant for the UC Admissions dashboard. 
-You have context of the entire site, the metrics being displayed, and the raw data.
+You have context of the entire site and the metrics being displayed.
 Use your Google Search tool if the user asks for up-to-date real-world context outside the data.
 
 ### SITE DATA SUMMARY (Calculated Stats)
@@ -41,9 +38,6 @@ ${jsonSummary}
 
 ### DATA README (Context on the dataset)
 ${readme}
-
-### RAW CSV DATA (Sample of the first ~500k chars)
-${csvData}
       `;
     } catch (e) {
       console.error('Failed to read context files:', e);
