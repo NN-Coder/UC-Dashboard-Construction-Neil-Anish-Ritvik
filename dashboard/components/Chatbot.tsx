@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from 'react';
-import { MessageSquare, X, Send, Maximize2 } from 'lucide-react';
+import { MessageSquare, X, Send } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 
 export default function Chatbot() {

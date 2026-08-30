@@ -5,7 +5,7 @@ import {
   ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer,
   BarChart, Bar, Legend, Cell, ReferenceLine, Line
 } from 'recharts';
-import { Info, TrendingUp, TrendingDown, ChevronDown, Check, Code, FileText, Activity } from 'lucide-react';
+import { Info, TrendingUp, TrendingDown, FileText, Activity } from 'lucide-react';
 import data from '../lib/data.json';
 
 const ALL_CAMPUSES = 'Universitywide';
