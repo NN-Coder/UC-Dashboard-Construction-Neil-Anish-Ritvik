@@ -16,9 +16,12 @@ const CodeBlock = ({ code, language }: { code: string, language: string }) => (
   </div>
 );
 
+import { useChartContext } from '../components/ChartContext';
+
 export default function Dashboard() {
   const [selectedCampus, setSelectedCampus] = useState(ALL_CAMPUSES);
   const [activeTab, setActiveTab] = useState('data');
+  const { dynamicCharts } = useChartContext();
 
   const campuses = Object.keys(data.campuses).sort();
   // Add an overall if needed, but our data prep might not have a clean 'overall' campus,
@@ -368,6 +371,29 @@ with open('data.json', 'w') as f:
           )}
         </div>
       </div>
+
+      {/* AI Generated Insights Section */}
+      {dynamicCharts.length > 0 && (
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-8 rounded-2xl shadow-sm border border-blue-100 mt-8">
+          <h3 className="text-2xl font-bold mb-6 flex items-center gap-2 text-blue-900">
+            <Activity className="text-blue-500" size={28} />
+            AI-Generated Exploratory Insights
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {dynamicCharts.map((chart) => (
+              <div key={chart.id} className="bg-white rounded-xl p-4 shadow-sm border border-blue-100 flex flex-col">
+                <div className="flex-1 flex justify-center items-center bg-slate-50 rounded-lg border border-slate-100 p-2 overflow-hidden">
+                  <img src={chart.imageSrc} alt="AI Generated Chart" className="max-w-full h-auto rounded" />
+                </div>
+                <div className="mt-4 text-sm text-slate-700 bg-blue-50/50 p-4 rounded-lg border border-blue-100 line-clamp-4">
+                  {chart.description}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }

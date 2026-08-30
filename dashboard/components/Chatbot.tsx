@@ -4,6 +4,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { MessageSquare, X, Send } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 
+import { useChartContext } from './ChartContext';
+
 export default function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<{role: 'user' | 'assistant', content: string}[]>([
@@ -11,6 +13,7 @@ export default function Chatbot() {
   ]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const { addChart } = useChartContext();
   
   // Resizing state
   const [size, setSize] = useState({ width: 360, height: 520 });
@@ -71,6 +74,17 @@ export default function Chatbot() {
       const data = await res.json();
       if (res.ok) {
         setMessages(prev => [...prev, { role: 'assistant', content: data.reply }]);
+        
+        // Push images to the global context to render in the main dashboard
+        if (data.images && data.images.length > 0) {
+          data.images.forEach((img: string, idx: number) => {
+            addChart({
+              id: Date.now().toString() + idx,
+              imageSrc: img,
+              description: data.reply.substring(0, 200) + '...' // Use first 200 chars of reply as description
+            });
+          });
+        }
       } else {
         setMessages(prev => [...prev, { role: 'assistant', content: `Error: ${data.error}` }]);
       }

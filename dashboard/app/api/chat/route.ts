@@ -83,6 +83,7 @@ ${readme}
     
     // Parse the response parts to extract text and any generated images from code execution
     let replyText = "";
+    const images: string[] = [];
     const parts = data.candidates?.[0]?.content?.parts || [];
     
     for (const part of parts) {
@@ -95,14 +96,16 @@ ${readme}
           replyText += `\n**Execution Output:**\n\`\`\`\n${part.codeExecutionResult.output}\n\`\`\`\n`;
         }
       } else if (part.inlineData) {
-        // If the code execution generated an image, it is returned as inlineData
+        // If the code execution generated an image, add it to the images array
+        images.push(`data:${part.inlineData.mimeType};base64,${part.inlineData.data}`);
+        // Also keep it inline for the chatbot window
         replyText += `\n![Generated Chart](data:${part.inlineData.mimeType};base64,${part.inlineData.data})\n`;
       }
     }
     
     if (!replyText) replyText = "I couldn't generate a response.";
 
-    return NextResponse.json({ reply: replyText.trim() });
+    return NextResponse.json({ reply: replyText.trim(), images });
   } catch (error: any) {
     console.error('Chat API error:', error);
     return NextResponse.json({ error: error.message || 'An error occurred' }, { status: 500 });
