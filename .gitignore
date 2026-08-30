@@ -2,5 +2,5 @@ node_modules/
 .next/
 venv/
 __pycache__/
-.env
+.env*
 .DS_Store
